@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      const path = `./target/wasm32-unknown-unknown/release/vanilla_rust_wasm.wasm?${Date.now()}`;
+      WebAssembly.instantiateStreaming(fetch(path), {})
+        .then(({ instance }) => {
+          const input = 47;
+          console.log({
+            add: instance.exports.add(2, 8),
+            fib: instance.exports.fib(input),
+            fibOri: input
+          });
+
+          const value = instance.exports.get_char();
+          const byte = new Uint8Array([value]);
+          const decoder = new TextDecoder('utf-8');
+          console.log({
+            char: decoder.decode(byte),
+            charOri: value
+          });
+        });
+    </script>
+  </head>
+</html>

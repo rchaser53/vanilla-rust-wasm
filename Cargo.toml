@@ -1,0 +1,8 @@
+[package]
+name = "vanilla-rust-wasm"
+version = "0.1.0"
+authors = ["yoshizawa.takayuki <yoshizawa.takayuki@linecorp.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "lib"]
