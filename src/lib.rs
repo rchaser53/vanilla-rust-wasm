@@ -18,9 +18,22 @@ pub fn get_char() -> char {
     'a'
 }
 
+#[no_mangle]
+pub extern fn get_i32_array() -> *const i32 {
+    let data = vec![1,2,3];
+    let length = data.len();
+
+    // preserve memory
+    let mut memory: [i32; 1_00] = [0; 1_00];
+    let s = data.as_slice() as &[i32];
+    memory[..length].clone_from_slice(&s[..length]);
+
+    memory.as_ptr()
+}
+
 #[test]
 fn test() {
-    assert!(add(10, -100) == -90);
-    assert!(fib(40) == 63245986);
+    assert!(add(1, 2) == 3);
+    assert!(fib(10) == 34);
     assert!(get_char() == 'a');
 }

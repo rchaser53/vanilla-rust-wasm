@@ -2,10 +2,11 @@
 <html>
   <head>
     <script>
+      const Module = {};
       const path = `./target/wasm32-unknown-unknown/release/vanilla_rust_wasm.wasm?${Date.now()}`;
       WebAssembly.instantiateStreaming(fetch(path), {})
-        .then(({ instance }) => {
-          const input = 47;
+        .then(({ instance, module }) => {
+          const input = 10;
           console.log({
             add: instance.exports.add(2, 8),
             fib: instance.exports.fib(input),
@@ -19,6 +20,10 @@
             char: decoder.decode(byte),
             charOri: value
           });
+
+          const pointer = instance.exports.get_i32_array();
+          const heap = new Int32Array(instance.exports.memory.buffer, pointer);
+          console.log(heap[0], heap[1], heap[2])
         });
     </script>
   </head>
