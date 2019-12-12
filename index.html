@@ -3,26 +3,59 @@
   <head>
     <script>
       const path = `./target/wasm32-unknown-unknown/release/vanilla_rust_wasm.wasm?${Date.now()}`;
+      const culculate = (instance, input) => {
+        console.log({
+          add: instance.exports.add(2, 8),
+          fib: instance.exports.fib(input),
+          fibOri: input
+        });
+      };
+
+      const getChar = (instance) => {
+        const value = instance.exports.get_char();
+        const byte = new Uint8Array([value]);
+        const decoder = new TextDecoder('utf-8');
+        console.log({
+          char: decoder.decode(byte),
+          charOri: value
+        });
+      };
+
+      const getArray = (instance) => {
+        const pointer = instance.exports.get_u8_array();
+        const heap = new Uint8Array(instance.exports.memory.buffer, pointer);
+        console.log(heap[0], heap[1], heap[2])
+      }
+
+      const getString = (instance) => {
+        const pointer = instance.exports.get_string();
+        const heap = new Uint8Array(instance.exports.memory.buffer, pointer);
+        const input = new Uint8Array(extractInput(heap));
+
+        const decoder = new TextDecoder('utf-8');
+        let result = decoder.decode(input);
+        console.log({ result })
+      }
+
+      const extractInput = (heap) => {
+        let index = 0;
+        let inputArray = [];
+        while (heap[index] !== 0) {
+          inputArray.push(heap[index]);
+          index += 1;
+        }
+        return inputArray;
+      }
+
       WebAssembly.instantiateStreaming(fetch(path), {})
-        .then(({ instance, module }) => {
-          const input = 10;
-          console.log({
-            add: instance.exports.add(2, 8),
-            fib: instance.exports.fib(input),
-            fibOri: input
-          });
+        .then(({ instance }) => {          
+          culculate(instance, 10);
 
-          const value = instance.exports.get_char();
-          const byte = new Uint8Array([value]);
-          const decoder = new TextDecoder('utf-8');
-          console.log({
-            char: decoder.decode(byte),
-            charOri: value
-          });
+          getChar(instance);
 
-          const pointer = instance.exports.get_u8_array();
-          const heap = new Uint8Array(instance.exports.memory.buffer, pointer);
-          console.log(heap[0], heap[1], heap[2])
+          getArray(instance);
+
+          getString(instance);
         });
     </script>
   </head>

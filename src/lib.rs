@@ -37,6 +37,17 @@ pub fn get_u8_array() -> *const u8 {
     memory.as_ptr()
 }
 
+#[no_mangle]
+pub fn get_string() -> *const u8 {
+    let data = String::from("hello world");
+    let length = data.len();
+    let s = data.as_bytes() as &[u8];
+    let mut memory = RUST_MEMORY.lock().unwrap();
+    memory[..length].clone_from_slice(&s[..length]);
+
+    memory.as_ptr()
+}
+
 #[test]
 fn test() {
     assert!(add(1, 2) == 3);
