@@ -2,7 +2,6 @@
 <html>
   <head>
     <script>
-      const Module = {};
       const path = `./target/wasm32-unknown-unknown/release/vanilla_rust_wasm.wasm?${Date.now()}`;
       WebAssembly.instantiateStreaming(fetch(path), {})
         .then(({ instance, module }) => {
@@ -21,8 +20,8 @@
             charOri: value
           });
 
-          const pointer = instance.exports.get_i32_array();
-          const heap = new Int32Array(instance.exports.memory.buffer, pointer);
+          const pointer = instance.exports.get_u8_array();
+          const heap = new Uint8Array(instance.exports.memory.buffer, pointer);
           console.log(heap[0], heap[1], heap[2])
         });
     </script>

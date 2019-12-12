@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate lazy_static;
+use std::sync::Mutex;
+
 #[no_mangle]
 pub fn add(left: i32, right: i32) -> i32 {
     left + right
@@ -18,14 +22,16 @@ pub fn get_char() -> char {
     'a'
 }
 
-#[no_mangle]
-pub extern fn get_i32_array() -> *const i32 {
-    let data = vec![1,2,3];
-    let length = data.len();
+lazy_static! {
+    pub static ref RUST_MEMORY: Mutex<[u8; 1_000]> = Mutex::new([0; 1_000]);
+}
 
-    // preserve memory
-    let mut memory: [i32; 1_00] = [0; 1_00];
-    let s = data.as_slice() as &[i32];
+#[no_mangle]
+pub fn get_u8_array() -> *const u8 {
+    let data: Vec<u8> = vec![1,2,3];
+    let length = data.len();
+    let s = data.as_slice() as &[u8];
+    let mut memory = RUST_MEMORY.lock().unwrap();
     memory[..length].clone_from_slice(&s[..length]);
 
     memory.as_ptr()
