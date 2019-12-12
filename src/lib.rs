@@ -23,15 +23,16 @@ pub fn get_char() -> char {
 }
 
 lazy_static! {
-    pub static ref RUST_MEMORY: Mutex<[u8; 1_000]> = Mutex::new([0; 1_000]);
+    pub static ref ARRAY_MEMORY: Mutex<[i32; 1_000]> = Mutex::new([0; 1_000]);
+    pub static ref STRING_MEMORY: Mutex<[u8; 1_000]> = Mutex::new([0; 1_000]);
 }
 
 #[no_mangle]
-pub fn get_u8_array() -> *const u8 {
-    let data: Vec<u8> = vec![1,2,3];
+pub fn get_i32_array() -> *const i32 {
+    let data: Vec<i32> = vec![1,2,3];
     let length = data.len();
-    let s = data.as_slice() as &[u8];
-    let mut memory = RUST_MEMORY.lock().unwrap();
+    let s = data.as_slice() as &[i32];
+    let mut memory = ARRAY_MEMORY.lock().unwrap();
     memory[..length].clone_from_slice(&s[..length]);
 
     memory.as_ptr()
@@ -42,7 +43,7 @@ pub fn get_string() -> *const u8 {
     let data = String::from("hello world");
     let length = data.len();
     let s = data.as_bytes() as &[u8];
-    let mut memory = RUST_MEMORY.lock().unwrap();
+    let mut memory = STRING_MEMORY.lock().unwrap();
     memory[..length].clone_from_slice(&s[..length]);
 
     memory.as_ptr()

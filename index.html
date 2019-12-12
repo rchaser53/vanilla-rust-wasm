@@ -22,26 +22,26 @@
       };
 
       const getArray = (instance) => {
-        const pointer = instance.exports.get_u8_array();
-        const heap = new Uint8Array(instance.exports.memory.buffer, pointer);
-        console.log(heap[0], heap[1], heap[2])
+        const pointer = instance.exports.get_i32_array();
+        const buffer = new Int32Array(instance.exports.memory.buffer, pointer);
+        console.log(buffer[0], buffer[1], buffer[2])
       }
 
       const getString = (instance) => {
         const pointer = instance.exports.get_string();
-        const heap = new Uint8Array(instance.exports.memory.buffer, pointer);
-        const input = new Uint8Array(extractInput(heap));
+        const buffer = new Uint8Array(instance.exports.memory.buffer, pointer);
+        const input = new Uint8Array(extractInput(buffer));
 
         const decoder = new TextDecoder('utf-8');
         let result = decoder.decode(input);
         console.log({ result })
       }
 
-      const extractInput = (heap) => {
+      const extractInput = (buffer) => {
         let index = 0;
         let inputArray = [];
-        while (heap[index] !== 0) {
-          inputArray.push(heap[index]);
+        while (buffer[index] !== 0) {
+          inputArray.push(buffer[index]);
           index += 1;
         }
         return inputArray;
